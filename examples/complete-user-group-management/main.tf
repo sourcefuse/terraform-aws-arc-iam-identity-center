@@ -83,7 +83,7 @@ module "aws_sso" {
   # USERS - Add your team members here with their groups and access
   # =============================================================================
   identity_store_users = {
-    # 👨‍💼 Management Team
+    #  Management Team
     "john.manager" = {
       user_name    = "john.manager"
       display_name = "John Manager"
@@ -97,7 +97,7 @@ module "aws_sso" {
       direct_assignments = []
     }
 
-    # 👩‍💻 Development Team
+    #  Development Team
     "alice.developer" = {
       user_name    = "alice.developer"
       display_name = "Alice Developer"
@@ -105,9 +105,9 @@ module "aws_sso" {
       family_name  = "Developer"
       email        = "alice.developer@company.com"
       title        = "Senior Software Engineer"
-      # 👥 Groups this user belongs to
+      # Groups this user belongs to
       groups = ["SeniorDevelopers"]
-      # 🎯 Direct account assignments (additional access beyond group)
+      # Direct account assignments (additional access beyond group)
       direct_assignments = [
         {
           permission_set = "Developer"
@@ -124,13 +124,13 @@ module "aws_sso" {
       family_name  = "Junior"
       email        = "bob.junior@company.com"
       title        = "Junior Developer"
-      # 👥 Groups this user belongs to
+      # Groups this user belongs to
       groups = ["JuniorDevelopers"]
-      # 🎯 Direct account assignments (none - only group access)
+      # Direct account assignments (none - only group access)
       direct_assignments = []
     }
 
-    # 👩‍🔬 Data Team
+    # Data Team
     "carol.analyst" = {
       user_name    = "carol.analyst"
       display_name = "Carol Analyst"
@@ -138,13 +138,13 @@ module "aws_sso" {
       family_name  = "Analyst"
       email        = "carol.analyst@company.com"
       title        = "Data Analyst"
-      # 👥 Groups this user belongs to
+      # Groups this user belongs to
       groups = ["DataTeam"]
-      # 🎯 Direct account assignments (none - only group access)
+      # Direct account assignments (none - only group access)
       direct_assignments = []
     }
 
-    # 💰 Finance Team
+    # Finance Team
     "david.finance" = {
       user_name    = "david.finance"
       display_name = "David Finance"
@@ -152,13 +152,13 @@ module "aws_sso" {
       family_name  = "Finance"
       email        = "david.finance@company.com"
       title        = "Finance Manager"
-      # 👥 Groups this user belongs to
+      # Groups this user belongs to
       groups = ["FinanceTeam"]
-      # 🎯 Direct account assignments (none - only group access)
+      # Direct account assignments (none - only group access)
       direct_assignments = []
     }
 
-    # 🎧 Support Team
+    # Support Team
     "eve.support" = {
       user_name    = "eve.support"
       display_name = "Eve Support"
@@ -166,13 +166,13 @@ module "aws_sso" {
       family_name  = "Support"
       email        = "eve.support@company.com"
       title        = "Technical Support"
-      # 👥 Groups this user belongs to
+      # Groups this user belongs to
       groups = ["SupportTeam"]
-      # 🎯 Direct account assignments (none - only group access)
+      # Direct account assignments (none - only group access)
       direct_assignments = []
     }
 
-    # 🔧 Special Case: User with NO group but direct assignments
+    # Special Case: User with NO group but direct assignments
     "temp.contractor" = {
       user_name    = "temp.contractor"
       display_name = "Temp Contractor"
@@ -180,9 +180,9 @@ module "aws_sso" {
       family_name  = "Contractor"
       email        = "temp.contractor@company.com"
       title        = "Temporary Contractor"
-      # 👥 Groups this user belongs to (none)
+      # Groups this user belongs to (none)
       groups = []
-      # 🎯 Direct account assignments (only way this user gets access)
+      # Direct account assignments (only way this user gets access)
       direct_assignments = [
         {
           permission_set = "ReadOnly"
@@ -243,7 +243,7 @@ module "aws_sso" {
   # ACCOUNT ACCESS ASSIGNMENTS - Group-based + auto-generated direct assignments
   # =============================================================================
   account_assignments = {
-    # 👨‍💼 MANAGERS - Full admin access to both environments
+    # MANAGERS - Full admin access to both environments
     "managers-admin-prod" = {
       permission_set_name = "FullAdmin"
       principal_type      = "GROUP"
@@ -260,7 +260,7 @@ module "aws_sso" {
       target_id           = var.development_account_id
     }
 
-    # 👩‍💻 SENIOR DEVELOPERS - Developer access to dev, read-only to prod (base access)
+    #  SENIOR DEVELOPERS - Developer access to dev, read-only to prod (base access)
     "senior-devs-dev-access" = {
       permission_set_name = "Developer"
       principal_type      = "GROUP"
@@ -277,7 +277,7 @@ module "aws_sso" {
       target_id           = var.production_account_id
     }
 
-    # 🧑‍💻 JUNIOR DEVELOPERS - Read-only access to dev only
+    # JUNIOR DEVELOPERS - Read-only access to dev only
     "junior-devs-dev-readonly" = {
       permission_set_name = "ReadOnly"
       principal_type      = "GROUP"
@@ -286,7 +286,7 @@ module "aws_sso" {
       target_id           = var.development_account_id
     }
 
-    # 👩‍🔬 DATA TEAM - Read-only access to both environments
+    # DATA TEAM - Read-only access to both environments
     "data-team-prod-readonly" = {
       permission_set_name = "ReadOnly"
       principal_type      = "GROUP"
@@ -303,7 +303,7 @@ module "aws_sso" {
       target_id           = var.development_account_id
     }
 
-    # 💰 FINANCE TEAM - Billing access to both environments
+    # FINANCE TEAM - Billing access to both environments
     "finance-prod-billing" = {
       permission_set_name = "BillingAccess"
       principal_type      = "GROUP"
@@ -320,7 +320,7 @@ module "aws_sso" {
       target_id           = var.development_account_id
     }
 
-    # 🎧 SUPPORT TEAM - Support access to both environments
+    # SUPPORT TEAM - Support access to both environments
     "support-prod-access" = {
       permission_set_name = "SupportAccess"
       principal_type      = "GROUP"
@@ -337,7 +337,7 @@ module "aws_sso" {
       target_id           = var.development_account_id
     }
 
-    # 🔧 INDIVIDUAL DIRECT ASSIGNMENTS are auto-generated from user definitions above!
+    # INDIVIDUAL DIRECT ASSIGNMENTS are auto-generated from user definitions above!
     # No need to define them here - they come from the 'direct_assignments' field
     # in each user definition.
   }
