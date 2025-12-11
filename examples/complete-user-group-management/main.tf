@@ -93,7 +93,7 @@ module "aws_sso" {
       title        = "Engineering Manager"
       # 👥 Groups this user belongs to
       groups = ["Managers"]
-      # 🎯 Direct account assignments (optional - leave empty if only using groups)
+      # Direct account assignments (optional - leave empty if only using groups)
       direct_assignments = []
     }
 
