@@ -1,106 +1,340 @@
-![Module Structure](./static/banner.png)
-# AWS Terraform Module
-# [terraform-aws-arc-iam-identity-center](https://github.com/sourcefuse/terraform-aws-arc-iam-identity-center)
+# AWS IAM Identity Center (SSO) Terraform Module
 
-<a href="https://github.com/sourcefuse/terraform-aws-arc-iam-identity-center/releases/latest"><img src="https://img.shields.io/github/release/sourcefuse/terraform-aws-arc-iam-identity-center.svg?style=for-the-badge" alt="Latest Release"/></a> <a href="https://github.com/sourcefuse/terraform-aws-arc-iam-identity-center/commits"><img src="https://img.shields.io/github/last-commit/sourcefuse/terraform-aws-arc-iam-identity-center.svg?style=for-the-badge" alt="Last Updated"/></a> ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
+A comprehensive, reusable Terraform module for provisioning and managing AWS IAM Identity Center (AWS SSO) resources following AWS and Terraform best practices.
 
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=sourcefuse_terraform-aws-arc-iam-identity-center&token=13a2f3a3c3de5bc9caf8060148954bd0979ceab4)](https://sonarcloud.io/summary/new_code?id=sourcefuse_terraform-aws-arc-iam-identity-center)
+## Table of Contents
 
----
+- [Features](#features)
+- [Architecture](#architecture)
+- [Requirements](#requirements)
+- [Usage](#usage)
+- [Examples](#examples)
+- [Module Structure](#module-structure)
+- [Contributing](#contributing)
+- [License](#license)
 
-# terraform-aws-module-template
+## Features
 
-## Overview
+- **Identity Center Management**: Create or reference existing Identity Center instances
+- **Permission Sets**: Support for AWS managed, customer managed, and inline policies
+- **Account Assignments**: Flexible user/group to account/OU assignments
+- **Identity Store**: Optional user and group management
+- **Application Assignments**: SAML/OIDC application integration
+- **External IdP Integration**: Support for SCIM and external identity providers
+- **Conditional Resources**: Smart resource creation based on input variables
+- **AWS Best Practices**: Follows naming conventions, tagging, and least-privilege principles
 
-SourceFuse AWS Reference Architecture (ARC) Terraform module for managing _________.
+## Architecture
 
-## Usage
+The module manages the following AWS IAM Identity Center components:
 
-To see a full example, check out the [main.tf](./example/main.tf) file in the example folder.  
-
-```hcl
-module "this" {
-  source = "git::https://github.com/sourcefuse/terraform-aws-refarch-<module_name>"
-}
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    AWS Organization                          │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │              IAM Identity Center                        │ │
+│  │  ┌─────────────────┐  ┌─────────────────┐              │ │
+│  │  │ Permission Sets │  │ Identity Store  │              │ │
+│  │  │ - AWS Managed   │  │ - Users         │              │ │
+│  │  │ - Customer Mgd  │  │ - Groups        │              │ │
+│  │  │ - Inline        │  └─────────────────┘              │ │
+│  │  └─────────────────┘                                   │ │
+│  │           │                                             │ │
+│  │  ┌─────────────────┐  ┌─────────────────┐              │ │
+│  │  │Account          │  │ Applications    │              │ │
+│  │  │Assignments      │  │ - SAML/OIDC     │              │ │
+│  │  └─────────────────┘  └─────────────────┘              │ │
+│  └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.3, < 2.0.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.0 |
+| terraform | >= 1.3 |
+| aws | >= 5.0 |
 
-## Providers
+## Usage
 
-No providers.
+### 🚀 Quick Start - Basic Setup
 
-## Modules
+```hcl
+module "aws_sso" {
+  source = "path/to/this/module"
 
-No modules.
+  # Identity Center Configuration (optional - auto-discovers if not provided)
+  identity_center_instance_arn = "arn:aws:sso:::instance/ssoins-1234567890abcdef"
 
-## Resources
+  # Permission Sets
+  permission_sets = {
+    "AdminAccess" = {
+      description      = "Full administrative access"
+      session_duration = "PT8H"
+      aws_managed_policies = [
+        "arn:aws:iam::aws:policy/AdministratorAccess"
+      ]
+    }
+    "ReadOnlyAccess" = {
+      description      = "Read-only access across AWS services"
+      session_duration = "PT4H"
+      aws_managed_policies = [
+        "arn:aws:iam::aws:policy/ReadOnlyAccess"
+      ]
+    }
+  }
 
-No resources.
+  # Create Groups
+  identity_store_groups = {
+    "Admins" = {
+      display_name = "Administrators"
+      description  = "System administrators"
+    }
+    "Developers" = {
+      display_name = "Developers"
+      description  = "Development team"
+    }
+  }
 
-## Inputs
+  # Account Assignments
+  account_assignments = {
+    "admins-full-access" = {
+      permission_set_name = "AdminAccess"
+      principal_type      = "GROUP"
+      principal_id        = "Admins"
+      target_type         = "AWS_ACCOUNT"
+      target_id          = "123456789012"
+    }
+    "devs-readonly" = {
+      permission_set_name = "ReadOnlyAccess"
+      principal_type      = "GROUP"
+      principal_id        = "Developers"
+      target_type         = "AWS_ACCOUNT"
+      target_id          = "123456789012"
+    }
+  }
 
-No inputs.
-
-## Outputs
-
-No outputs.
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-
-## Versioning  
-This project uses a `.version` file at the root of the repo which the pipeline reads from and does a git tag.  
-
-When you intend to commit to `main`, you will need to increment this version. Once the project is merged,
-the pipeline will kick off and tag the latest git commit.  
-
-## Development
-
-### Prerequisites
-
-- [terraform](https://learn.hashicorp.com/terraform/getting-started/install#installing-terraform)
-- [terraform-docs](https://github.com/segmentio/terraform-docs)
-- [pre-commit](https://pre-commit.com/#install)
-- [golang](https://golang.org/doc/install#install)
-- [golint](https://github.com/golang/lint#installation)
-
-### Configurations
-
-- Configure pre-commit hooks
-  ```sh
-  pre-commit install
-  ```
-
-### Versioning
-
-while Contributing or doing git commit please specify the breaking change in your commit message whether its major,minor or patch
-
-For Example
-
-```sh
-git commit -m "your commit message #major"
+  tags = {
+    Environment = "production"
+    Project     = "identity-management"
+    Owner       = "platform-team"
+  }
+}
 ```
-By specifying this , it will bump the version and if you don't specify this in your commit message then by default it will consider patch and will bump that accordingly
 
-### Tests
-- Tests are available in `test` directory
-- Configure the dependencies
-  ```sh
-  cd test/
-  go mod init github.com/sourcefuse/terraform-aws-refarch-<module_name>
-  go get github.com/gruntwork-io/terratest/modules/terraform
-  ```
-- Now execute the test  
-  ```sh
-  go test -timeout  30m
-  ```
+### 🎯 Complete User, Group Management Setup (Recommended)
 
-## Authors
+For the most intuitive experience, use our complete-user-group-management structure where everything about each user is defined in one place:
 
-This project is authored by:
-- SourceFuse ARC Team
+```hcl
+module "aws_sso" {
+  source = "path/to/this/module"
+
+  identity_center_instance_arn = "arn:aws:sso:::instance/ssoins-1234567890abcdef"
+
+  # Permission Sets with clear descriptions
+  permission_sets = {
+    "FullAdmin" = {
+      description      = "FULL ADMIN - Complete AWS access (use with caution)"
+      session_duration = "PT2H"
+      aws_managed_policies = ["arn:aws:iam::aws:policy/AdministratorAccess"]
+    }
+    "Developer" = {
+      description      = "DEVELOPER - Can create/modify most resources except IAM"
+      session_duration = "PT8H"
+      aws_managed_policies = ["arn:aws:iam::aws:policy/PowerUserAccess"]
+    }
+    "ReadOnly" = {
+      description      = "READ ONLY - Can view all resources but cannot modify"
+      session_duration = "PT12H"
+      aws_managed_policies = ["arn:aws:iam::aws:policy/ReadOnlyAccess"]
+    }
+  }
+
+  # Users with groups and direct assignments in one place
+  identity_store_users = {
+    "john.manager" = {
+      user_name    = "john.manager"
+      display_name = "John Manager"
+      given_name   = "John"
+      family_name  = "Manager"
+      email        = "john.manager@company.com"
+      title        = "Engineering Manager"
+      
+      # Groups this user belongs to
+      groups = ["Managers"]
+      
+      # Direct assignments (optional)
+      direct_assignments = []
+    }
+    
+    "alice.developer" = {
+      user_name    = "alice.developer"
+      display_name = "Alice Developer"
+      given_name   = "Alice"
+      family_name  = "Developer"
+      email        = "alice.developer@company.com"
+      title        = "Senior Software Engineer"
+      
+      # Groups this user belongs to
+      groups = ["SeniorDevelopers"]
+      
+      # Additional direct access beyond group permissions
+      direct_assignments = [
+        {
+          permission_set = "Developer"
+          account_id     = "111111111111"  # Production account
+          reason         = "Senior dev needs prod deployment access"
+        }
+      ]
+    }
+  }
+
+  # Groups
+  identity_store_groups = {
+    "Managers" = {
+      display_name = "Managers"
+      description  = "Engineering and team managers"
+    }
+    "SeniorDevelopers" = {
+      display_name = "Senior Developers"
+      description  = "Experienced developers with advanced permissions"
+    }
+  }
+
+  # Group-based account assignments
+  account_assignments = {
+    "managers-admin-prod" = {
+      permission_set_name = "FullAdmin"
+      principal_type      = "GROUP"
+      principal_id        = "Managers"
+      target_type         = "AWS_ACCOUNT"
+      target_id          = "111111111111"
+    }
+    "senior-devs-dev-access" = {
+      permission_set_name = "Developer"
+      principal_type      = "GROUP"
+      principal_id        = "SeniorDevelopers"
+      target_type         = "AWS_ACCOUNT"
+      target_id          = "222222222222"
+    }
+  }
+
+  tags = {
+    Environment = "multi-account"
+    Project     = "arc"
+    Owner       = "platform-team"
+  }
+}
+```
+
+### 🔧 Advanced Setup with Custom Policies
+
+```hcl
+module "aws_sso" {
+  source = "path/to/this/module"
+
+  identity_center_instance_arn = "arn:aws:sso:::instance/ssoins-1234567890abcdef"
+
+  # Advanced permission sets with all policy types
+  permission_sets = {
+    "DataScientist" = {
+      description      = "Data science and analytics access"
+      session_duration = "PT12H"
+      
+      # AWS Managed Policies
+      aws_managed_policies = [
+        "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+        "arn:aws:iam::aws:policy/AmazonSageMakerReadOnly"
+      ]
+      
+      # Customer Managed Policies (must exist in your account)
+      customer_managed_policies = [
+        {
+          name = "DataLakeAccess"
+          path = "/data-science/"
+        }
+      ]
+      
+      # Inline Policy for specific permissions
+      inline_policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+          {
+            Effect = "Allow"
+            Action = [
+              "sagemaker:CreateNotebookInstance",
+              "sagemaker:StartNotebookInstance"
+            ]
+            Resource = "*"
+            Condition = {
+              StringEquals = {
+                "aws:RequestedRegion" = ["us-east-1", "us-west-2"]
+              }
+            }
+          }
+        ]
+      })
+      
+      # Permission Boundary for security
+      permissions_boundary = {
+        customer_managed_policy_reference = {
+          name = "DataScientistBoundary"
+          path = "/boundaries/"
+        }
+      }
+    }
+  }
+
+  # Rest of configuration...
+  identity_store_groups = {
+    "DataScience" = {
+      display_name = "Data Science Team"
+      description  = "Data scientists and ML engineers"
+    }
+  }
+
+  account_assignments = {
+    "datascience-prod" = {
+      permission_set_name = "DataScientist"
+      principal_type      = "GROUP"
+      principal_id        = "DataScience"
+      target_type         = "AWS_ACCOUNT"
+      target_id          = "111111111111"
+    }
+  }
+
+  tags = {
+    Environment = "production"
+    Project     = "advanced-sso"
+    Owner       = "data-team"
+  }
+}
+```
+
+## Examples
+
+The `examples/` directory contains several complete use cases:
+
+- **[basic-sso-setup](examples/basic-sso-setup/)** - Simple SSO configuration for single account
+- **[complete-user-group-management](examples/complete-user-group-management/)** - 🌟 **RECOMMENDED** - Easy-to-understand structure with comprehensive outputs
+- **[organization-rbac](examples/organization-rbac/)** - Multi-account RBAC with multiple permission sets
+- **[user-management](examples/user-management/)** - User creation, group assignments, and direct user assignments
+- **[custom-permission-sets](examples/custom-permission-sets/)** - Advanced permission sets with all policy types and boundaries
+- **[combined-advanced](examples/combined-advanced/)** - Complete example combining user management and custom permission sets
+- **[external-idp-scim](examples/external-idp-scim/)** - External IdP integration with SCIM
+- **[application-assignments](examples/application-assignments/)** - Custom SAML/OIDC applications
+- **[advanced-permission-sets](examples/advanced-permission-sets/)** - Customer managed and inline policies
+
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run validation: `make validate`
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
