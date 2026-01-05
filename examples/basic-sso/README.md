@@ -17,9 +17,9 @@ This example demonstrates a simple AWS SSO configuration for a single account wi
 
 ## Usage
 
-1. Copy the example variables file:
+1. Configure variables file:
    ```bash
-   cp terraform.tfvars.example terraform.tfvars
+   terraform.tfvars
    ```
 
 2. Edit `terraform.tfvars` with your values:

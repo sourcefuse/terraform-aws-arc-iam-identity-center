@@ -52,9 +52,9 @@ This example demonstrates sophisticated permission sets using a combination of A
 ## Usage
 
 1. **Create required customer managed policies** in your AWS accounts first
-2. Copy the example variables file:
+2. Configure variables file:
    ```bash
-   cp terraform.tfvars.example terraform.tfvars
+   terraform.tfvars
    ```
 
 3. Edit `terraform.tfvars` with your values:
