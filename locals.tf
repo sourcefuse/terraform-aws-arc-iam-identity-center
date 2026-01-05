@@ -97,3 +97,8 @@ locals {
     })
   }
 }
+
+# Data source for existing Identity Center instance
+data "aws_ssoadmin_instances" "existing" {
+  count = 1
+}

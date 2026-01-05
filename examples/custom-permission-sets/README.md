@@ -101,9 +101,9 @@ This example demonstrates advanced permission sets using all available policy ty
 ## Usage
 
 1. **Create required customer managed policies** (see above)
-2. Copy and configure variables:
+2. Configure variables:
    ```bash
-   cp terraform.tfvars.example terraform.tfvars
+   terraform.tfvars
    # Edit with your actual values
    ```
 3. Initialize and apply:
@@ -127,3 +127,77 @@ This example demonstrates advanced permission sets using all available policy ty
 - **Role-Based Design**: Different permission patterns for different roles
 - **Security Layers**: Multiple policy types working together
 - **Conditional Access**: Region and resource-based conditions
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
+
+## Providers
+
+No providers.
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
+
+## Resources
+
+No resources.
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
+| <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_permission_sets_with_boundaries"></a> [permission\_sets\_with\_boundaries](#output\_permission\_sets\_with\_boundaries) | Permission sets with their boundary configurations |
+| <a name="output_policy_types_summary"></a> [policy\_types\_summary](#output\_policy\_types\_summary) | Summary of policy types used in each permission set |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
+
+## Providers
+
+No providers.
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
+
+## Resources
+
+No resources.
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
+| <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | `"us-east-1"` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_permission_sets_with_boundaries"></a> [permission\_sets\_with\_boundaries](#output\_permission\_sets\_with\_boundaries) | Permission sets with their boundary configurations |
+| <a name="output_policy_types_summary"></a> [policy\_types\_summary](#output\_policy\_types\_summary) | Summary of policy types used in each permission set |
+<!-- END_TF_DOCS -->

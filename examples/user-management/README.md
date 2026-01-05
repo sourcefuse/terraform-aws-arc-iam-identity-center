@@ -42,9 +42,9 @@ jane.smith ────────┼──► Direct ReadOnlyAccess (Prod Acco
 
 ## Usage
 
-1. Copy and configure variables:
+1. Configure variables:
    ```bash
-   cp terraform.tfvars.example terraform.tfvars
+   terraform.tfvars
    # Edit with your actual values
    ```
 
@@ -69,3 +69,79 @@ jane.smith ────────┼──► Direct ReadOnlyAccess (Prod Acco
 - **Role Separation**: Different access patterns for different roles
 - **Admin Access Control**: Admin access limited to specific users
 - **Environment Isolation**: Different permissions for prod vs dev
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
+
+## Providers
+
+No providers.
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
+
+## Resources
+
+No resources.
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
+| <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_created_groups"></a> [created\_groups](#output\_created\_groups) | All created Identity Store groups |
+| <a name="output_created_users"></a> [created\_users](#output\_created\_users) | All created Identity Store users |
+| <a name="output_user_assignments_summary"></a> [user\_assignments\_summary](#output\_user\_assignments\_summary) | Summary of user and group assignments |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
+
+## Providers
+
+No providers.
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
+
+## Resources
+
+No resources.
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
+| <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | `"us-east-1"` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_created_groups"></a> [created\_groups](#output\_created\_groups) | All created Identity Store groups |
+| <a name="output_created_users"></a> [created\_users](#output\_created\_users) | All created Identity Store users |
+| <a name="output_user_assignments_summary"></a> [user\_assignments\_summary](#output\_user\_assignments\_summary) | Summary of user and group assignments |
+<!-- END_TF_DOCS -->

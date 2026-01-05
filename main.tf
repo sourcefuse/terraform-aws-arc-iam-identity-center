@@ -1,8 +1,3 @@
-# Data source for existing Identity Center instance
-data "aws_ssoadmin_instances" "existing" {
-  count = 1
-}
-
 # Permission Sets
 resource "aws_ssoadmin_permission_set" "main" {
   for_each = local.permission_sets_with_names
@@ -14,6 +9,11 @@ resource "aws_ssoadmin_permission_set" "main" {
   relay_state      = each.value.relay_state
 
   tags = merge(local.common_tags, each.value.tags)
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
 }
 
 # AWS Managed Policy Attachments
@@ -103,6 +103,19 @@ resource "aws_ssoadmin_account_assignment" "main" {
   principal_type     = each.value.principal_type
   target_id          = each.value.target_id
   target_type        = each.value.target_type
+
+  # Ensure all policy attachments are complete before creating assignments
+  depends_on = [
+    aws_ssoadmin_managed_policy_attachment.aws_managed,
+    aws_ssoadmin_customer_managed_policy_attachment.customer_managed,
+    aws_ssoadmin_permission_set_inline_policy.inline,
+    aws_ssoadmin_permissions_boundary_attachment.boundary
+  ]
+
+  timeouts {
+    create = "30m"
+    delete = "90m"
+  }
 }
 
 # Identity Store Users

@@ -105,7 +105,7 @@ Permission Sets Policy Composition:
 1. **Create required customer managed policies** (see above)
 2. Copy and configure:
    ```bash
-   cp terraform.tfvars.example terraform.tfvars
+   terraform.tfvars
    # Edit with your values
    ```
 3. Apply:
@@ -142,3 +142,77 @@ Permission Sets Policy Composition:
 - **Permission Boundaries**: Maximum permission enforcement
 - **External User Controls**: Strict contractor limitations
 - **Session Management**: Time-limited access by role
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
+
+## Providers
+
+No providers.
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
+
+## Resources
+
+No resources.
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
+| <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_complete_user_summary"></a> [complete\_user\_summary](#output\_complete\_user\_summary) | Complete summary of users, groups, and assignments |
+| <a name="output_permission_sets_analysis"></a> [permission\_sets\_analysis](#output\_permission\_sets\_analysis) | Analysis of permission sets and their configurations |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
+
+## Providers
+
+No providers.
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
+
+## Resources
+
+No resources.
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
+| <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | `"us-east-1"` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_complete_user_summary"></a> [complete\_user\_summary](#output\_complete\_user\_summary) | Complete summary of users, groups, and assignments |
+| <a name="output_permission_sets_analysis"></a> [permission\_sets\_analysis](#output\_permission\_sets\_analysis) | Analysis of permission sets and their configurations |
+<!-- END_TF_DOCS -->
