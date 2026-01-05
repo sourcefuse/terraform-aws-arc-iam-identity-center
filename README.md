@@ -44,7 +44,7 @@ variable "region" {
 }
 
 module "aws_sso" {
-  source = "path/to/this/module"
+  source = "sourcefuse/arc-iam-identity-center/aws"
 
   # Identity Center Configuration (optional - auto-discovers if not provided)
   identity_center_instance_arn = "arn:aws:sso:::instance/ssoins-1234567890abcdef"
@@ -121,7 +121,7 @@ variable "region" {
 }
 
 module "aws_sso" {
-  source = "path/to/this/module"
+  source = "sourcefuse/arc-iam-identity-center/aws"
 
   identity_center_instance_arn = "arn:aws:sso:::instance/ssoins-1234567890abcdef"
 
@@ -235,7 +235,7 @@ variable "region" {
 }
 
 module "aws_sso" {
-  source = "path/to/this/module"
+  source = "sourcefuse/arc-iam-identity-center/aws"
 
   identity_center_instance_arn = "arn:aws:sso:::instance/ssoins-1234567890abcdef"
 
@@ -320,7 +320,7 @@ module "aws_sso" {
 The `examples/` directory contains several complete use cases:
 
 - **[basic-sso](examples/basic-sso/)** - Simple SSO configuration for single account
-- **[complete-user-group-management](examples/complete-user-group-management/)** - 🌟 **RECOMMENDED** - Easy-to-understand structure with comprehensive outputs
+- **[complete-user-group-management](examples/complete-user-group-management/)** - **RECOMMENDED** - Easy-to-understand structure with comprehensive outputs
 - **[user-management](examples/user-management/)** - User creation, group assignments, and direct user assignments
 - **[custom-permission-sets](examples/custom-permission-sets/)** - Advanced permission sets with all policy types and boundaries
 - **[advanced-permission-sets](examples/advanced-permission-sets/)** - Customer managed and inline policies

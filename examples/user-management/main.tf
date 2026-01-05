@@ -15,6 +15,20 @@ provider "aws" {
   region = var.region
 }
 
+################################################################################
+## Tags
+################################################################################
+module "tags" {
+  source  = "sourcefuse/arc-tags/aws"
+  version = "1.2.3"
+
+  environment = var.environment
+  project     = var.namespace
+
+  extra_tags = {
+    RepoName = "terraform-aws-arc-iam-identity-center"
+  }
+}
 
 ################################################################
 ## Module Identity Center User Management
@@ -155,9 +169,5 @@ module "aws_sso" {
     }
   }
 
-  tags = {
-    Environment = "multi-account"
-    Project     = "user-management"
-    Owner       = "identity-team"
-  }
+  tags = module.tags.tags
 }

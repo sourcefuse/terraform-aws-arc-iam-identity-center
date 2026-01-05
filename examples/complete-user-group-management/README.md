@@ -69,9 +69,9 @@ This example provides the most user-friendly way to manage AWS SSO with clear st
    terraform output access_matrix
    ```
 
-## 📝 How to Make Changes
+##  How to Make Changes
 
-### ➕ **Add a New User**
+###  **Add a New User**
 
 1. **Add to users section:**
    ```hcl
@@ -98,7 +98,7 @@ This example provides the most user-friendly way to manage AWS SSO with clear st
    terraform apply
    ```
 
-### 🔄 **Change User Permissions**
+###  **Change User Permissions**
 
 **Option 1: Move to different group**
 ```hcl
@@ -195,6 +195,7 @@ No providers.
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
+| <a name="module_tags"></a> [tags](#module\_tags) | sourcefuse/arc-tags/aws | 1.2.3 |
 
 ## Resources
 
@@ -205,47 +206,8 @@ No resources.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
-| <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| <a name="output_access_matrix"></a> [access\_matrix](#output\_access\_matrix) | Complete access matrix showing who has access to which accounts |
-| <a name="output_access_summary_dashboard"></a> [access\_summary\_dashboard](#output\_access\_summary\_dashboard) | Complete access summary - who has what permissions where |
-| <a name="output_emergency_contacts"></a> [emergency\_contacts](#output\_emergency\_contacts) | Emergency contacts for AWS access issues |
-| <a name="output_group_membership_matrix"></a> [group\_membership\_matrix](#output\_group\_membership\_matrix) | Who belongs to which groups |
-| <a name="output_permission_sets_guide"></a> [permission\_sets\_guide](#output\_permission\_sets\_guide) | What each permission set allows users to do |
-| <a name="output_quick_reference_guide"></a> [quick\_reference\_guide](#output\_quick\_reference\_guide) | Quick reference for common tasks |
-| <a name="output_security_alerts"></a> [security\_alerts](#output\_security\_alerts) | Important security information and alerts |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-<!-- BEGIN_TF_DOCS -->
-## Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
-
-## Providers
-
-No providers.
-
-## Modules
-
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
-
-## Resources
-
-No resources.
-
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
+| <a name="input_environment"></a> [environment](#input\_environment) | Name of the environment, i.e. dev, stage, prod | `string` | `"management"` | no |
+| <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace of the project, i.e. arc | `string` | `"arc"` | no |
 | <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | `"us-east-1"` | no |
 
@@ -260,4 +222,4 @@ No resources.
 | <a name="output_permission_sets_guide"></a> [permission\_sets\_guide](#output\_permission\_sets\_guide) | What each permission set allows users to do |
 | <a name="output_quick_reference_guide"></a> [quick\_reference\_guide](#output\_quick\_reference\_guide) | Quick reference for common tasks |
 | <a name="output_security_alerts"></a> [security\_alerts](#output\_security\_alerts) | Important security information and alerts |
-<!-- END_TF_DOCS -->
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

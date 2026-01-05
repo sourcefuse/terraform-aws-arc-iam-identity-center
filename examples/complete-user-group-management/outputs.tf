@@ -13,19 +13,6 @@ output "access_summary_dashboard" {
   }
 }
 
-#  USER DIRECTORY
-# output "user_directory" {
-#   description = "Complete user directory with contact information"
-#   value = {
-#     for user_key, user_info in module.aws_sso.identity_store_users : user_key => {
-#       "Name"     = user_info.display_name
-#       "Email"    = "${user_key}@company.com"
-#       "User_ID"  = user_info.user_id
-#       "Title"    = contains(keys(var), "user_titles") ? lookup(var.user_titles, user_key, "Employee") : "Employee"
-#     }
-#   }
-# }
-
 # GROUP MEMBERSHIP MATRIX
 output "group_membership_matrix" {
   description = "Who belongs to which groups"

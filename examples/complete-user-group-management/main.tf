@@ -15,6 +15,20 @@ provider "aws" {
   region = var.region
 }
 
+################################################################################
+## Tags
+################################################################################
+module "tags" {
+  source  = "sourcefuse/arc-tags/aws"
+  version = "1.2.3"
+
+  environment = var.environment
+  project     = var.namespace
+
+  extra_tags = {
+    RepoName = "terraform-aws-arc-iam-identity-center"
+  }
+}
 
 # =============================================================================
 # AWS SSO USER-FRIENDLY MANAGEMENT EXAMPLE
@@ -24,7 +38,7 @@ provider "aws" {
 #
 # QUICK REFERENCE:
 # - To add a user: Add to 'users' section below
-# - To add a group: Add to 'groups' section below  
+# - To add a group: Add to 'groups' section below
 # - To assign user to group: Add to 'user_group_assignments' section
 # - To give account access: Add to 'account_access_assignments' section
 # =============================================================================
@@ -253,7 +267,7 @@ module "aws_sso" {
   # =============================================================================
   # USER → GROUP ASSIGNMENTS - Auto-generated from user definitions above
   # =============================================================================
-  # No need to define group_memberships - they're automatically created from 
+  # No need to define group_memberships - they're automatically created from
   # the 'groups' field in each user definition above!
 
   # =============================================================================
@@ -360,10 +374,5 @@ module "aws_sso" {
   }
 
   # Common tags for all resources
-  tags = {
-    Environment = "multi-account"
-    Project     = "user-friendly-sso"
-    Owner       = "platform-team"
-    ManagedBy   = "terraform"
-  }
+  tags = module.tags.tags
 }

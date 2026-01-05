@@ -22,24 +22,6 @@ This example combines comprehensive user management with advanced permission set
 2. **Direct User Assignments** - Individual users get specific access
 3. **Mixed Assignments** - Users can have both group and direct assignments
 
-## Architecture Diagram
-
-```
-Users & Groups:
-├── sarah.connor ──► SeniorDevelopers ──► SeniorDeveloper (Dev + Prod)
-├── john.smith ───► JuniorDevelopers ──► JuniorDeveloper (Dev only)
-├── mike.johnson ─► TeamLeads ────────► TeamLead (Dev + Prod)
-│                └─► Direct ──────────► SeniorDeveloper (Dev)
-├── lisa.davis ───► Contractors ─────► Contractor (Dev only)
-└── alex.wilson ──► Direct ──────────► SeniorDeveloper (Dev + Prod)
-
-Permission Sets Policy Composition:
-├── SeniorDeveloper: AWS Managed + Customer Managed + Inline + Boundary
-├── JuniorDeveloper: AWS Managed + Inline + Boundary  
-├── TeamLead: AWS Managed + Customer Managed + Inline
-└── Contractor: AWS Managed + Inline + Boundary
-```
-
 ## Prerequisites
 
 **Required Customer Managed Policies:**
@@ -59,7 +41,7 @@ Permission Sets Policy Composition:
 #### DeveloperBoundary:
 ```json
 {
-  "Version": "2012-10-17", 
+  "Version": "2012-10-17",
   "Statement": [
     {
       "Effect": "Allow",
@@ -70,7 +52,7 @@ Permission Sets Policy Composition:
       "Effect": "Deny",
       "Action": [
         "iam:CreateUser",
-        "iam:DeleteUser", 
+        "iam:DeleteUser",
         "organizations:*",
         "account:*",
         "billing:*"
@@ -160,6 +142,7 @@ No providers.
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
+| <a name="module_tags"></a> [tags](#module\_tags) | sourcefuse/arc-tags/aws | 1.2.3 |
 
 ## Resources
 
@@ -170,42 +153,8 @@ No resources.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
-| <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| <a name="output_complete_user_summary"></a> [complete\_user\_summary](#output\_complete\_user\_summary) | Complete summary of users, groups, and assignments |
-| <a name="output_permission_sets_analysis"></a> [permission\_sets\_analysis](#output\_permission\_sets\_analysis) | Analysis of permission sets and their configurations |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-<!-- BEGIN_TF_DOCS -->
-## Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
-
-## Providers
-
-No providers.
-
-## Modules
-
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
-
-## Resources
-
-No resources.
-
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
+| <a name="input_environment"></a> [environment](#input\_environment) | Name of the environment, i.e. dev, stage, prod | `string` | `"management"` | no |
+| <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace of the project, i.e. arc | `string` | `"arc"` | no |
 | <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | `"us-east-1"` | no |
 
@@ -215,4 +164,4 @@ No resources.
 |------|-------------|
 | <a name="output_complete_user_summary"></a> [complete\_user\_summary](#output\_complete\_user\_summary) | Complete summary of users, groups, and assignments |
 | <a name="output_permission_sets_analysis"></a> [permission\_sets\_analysis](#output\_permission\_sets\_analysis) | Analysis of permission sets and their configurations |
-<!-- END_TF_DOCS -->
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

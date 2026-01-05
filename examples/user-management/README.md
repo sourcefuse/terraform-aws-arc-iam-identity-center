@@ -19,20 +19,6 @@ This example demonstrates comprehensive user and group management in AWS SSO, in
 2. **Direct User Assignments**: Individual users get specific permissions
 3. **Mixed Assignments**: Users can have both group and direct assignments
 
-## Architecture
-
-```
-Users:
-├── john.doe ──────┐
-├── jane.smith ────┼──► Developers Group ──► DeveloperAccess (Dev Account)
-│                  │
-├── bob.wilson ────┼──► BusinessUsers Group ──► ReadOnlyAccess (Prod Account)
-│                  │
-└── alice.johnson ─┼──► Direct AdminAccess (Prod + Dev Accounts)
-                   │
-jane.smith ────────┼──► Direct ReadOnlyAccess (Prod Account)
-```
-
 ## Prerequisites
 
 - AWS Organizations enabled
@@ -87,6 +73,7 @@ No providers.
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
+| <a name="module_tags"></a> [tags](#module\_tags) | sourcefuse/arc-tags/aws | 1.2.3 |
 
 ## Resources
 
@@ -97,43 +84,8 @@ No resources.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
-| <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| <a name="output_created_groups"></a> [created\_groups](#output\_created\_groups) | All created Identity Store groups |
-| <a name="output_created_users"></a> [created\_users](#output\_created\_users) | All created Identity Store users |
-| <a name="output_user_assignments_summary"></a> [user\_assignments\_summary](#output\_user\_assignments\_summary) | Summary of user and group assignments |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-<!-- BEGIN_TF_DOCS -->
-## Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
-
-## Providers
-
-No providers.
-
-## Modules
-
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_aws_sso"></a> [aws\_sso](#module\_aws\_sso) | ../../ | n/a |
-
-## Resources
-
-No resources.
-
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_development_account_id"></a> [development\_account\_id](#input\_development\_account\_id) | AWS Account ID for development environment | `string` | n/a | yes |
+| <a name="input_environment"></a> [environment](#input\_environment) | Name of the environment, i.e. dev, stage, prod | `string` | `"management"` | no |
+| <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace of the project, i.e. arc | `string` | `"arc"` | no |
 | <a name="input_production_account_id"></a> [production\_account\_id](#input\_production\_account\_id) | AWS Account ID for production environment | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | `"us-east-1"` | no |
 
@@ -144,4 +96,4 @@ No resources.
 | <a name="output_created_groups"></a> [created\_groups](#output\_created\_groups) | All created Identity Store groups |
 | <a name="output_created_users"></a> [created\_users](#output\_created\_users) | All created Identity Store users |
 | <a name="output_user_assignments_summary"></a> [user\_assignments\_summary](#output\_user\_assignments\_summary) | Summary of user and group assignments |
-<!-- END_TF_DOCS -->
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
