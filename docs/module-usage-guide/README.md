@@ -40,7 +40,7 @@ variable "region" {
 module "aws_sso" {
   source  = "sourcefuse/arc-iam-identity-center/aws"
   version = "~> 1.0"
-  
+
   # Basic configuration
   permission_sets = {
     "AdminAccess" = {
@@ -51,14 +51,14 @@ module "aws_sso" {
       ]
     }
   }
-  
+
   identity_store_groups = {
     "Admins" = {
       display_name = "Administrators"
       description  = "System administrators"
     }
   }
-  
+
   account_assignments = {
     "admins-full-access" = {
       permission_set_name = "AdminAccess"
@@ -68,7 +68,7 @@ module "aws_sso" {
       target_id          = "123456789012"
     }
   }
-  
+
   tags = {
     Environment = "production"
     Project     = "identity-management"
@@ -139,7 +139,7 @@ This example will create:
 
 ### Reporting Issues
 
-If you encounter a bug or issue, please report it on the [GitHub repository](https://github.com/sourcefuse/terraform-aws-arc-iam-identity-center).
+If you encounter a bug or issue, please report it on the [GitHub repository](https://github.com/sourcefuse/terraform-aws-arc-iam-identity-center/issues).
 
 ## Security Considerations
 
@@ -183,4 +183,3 @@ This module is licensed under the Apache 2.0 license. Refer to the [LICENSE](../
 ### Open Source Contribution
 
 Contribute to open source by using and enhancing this module. Your contributions are welcome!
-
