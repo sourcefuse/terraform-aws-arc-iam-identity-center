@@ -221,7 +221,7 @@ module "aws_sso" {
 }
 ```
 
-### 🔧 Advanced Setup with Custom Policies
+###  Advanced Setup with Custom Policies
 
 ```hcl
 provider "aws" {

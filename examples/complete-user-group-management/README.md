@@ -4,12 +4,6 @@ This example provides the most user-friendly way to manage AWS SSO with clear st
 
 ##  What Makes This User-Friendly?
 
-###  **Clear Visual Structure**
--  **Emojis and sections** - Easy to find what you need
--  **Descriptive names** - No cryptic codes or abbreviations  
--  **Organized sections** - Users, Groups, Permissions clearly separated
--  **Inline comments** - Explains what each section does
-
 ###  **Easy Management**
 -  **Add users** - Just add to the users section
 -  **Change permissions** - Modify group assignments
