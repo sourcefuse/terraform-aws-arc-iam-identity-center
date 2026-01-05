@@ -153,14 +153,14 @@ module "aws_sso" {
       family_name  = "Manager"
       email        = "john.manager@company.com"
       title        = "Engineering Manager"
-      
+
       # Groups this user belongs to
       groups = ["Managers"]
-      
+
       # Direct assignments (optional)
       direct_assignments = []
     }
-    
+
     "alice.developer" = {
       user_name    = "alice.developer"
       display_name = "Alice Developer"
@@ -168,10 +168,10 @@ module "aws_sso" {
       family_name  = "Developer"
       email        = "alice.developer@company.com"
       title        = "Senior Software Engineer"
-      
+
       # Groups this user belongs to
       groups = ["SeniorDevelopers"]
-      
+
       # Additional direct access beyond group permissions
       direct_assignments = [
         {
@@ -244,13 +244,13 @@ module "aws_sso" {
     "DataScientist" = {
       description      = "Data science and analytics access"
       session_duration = "PT12H"
-      
+
       # AWS Managed Policies
       aws_managed_policies = [
         "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
         "arn:aws:iam::aws:policy/AmazonSageMakerReadOnly"
       ]
-      
+
       # Customer Managed Policies (must exist in your account)
       customer_managed_policies = [
         {
@@ -258,7 +258,7 @@ module "aws_sso" {
           path = "/data-science/"
         }
       ]
-      
+
       # Inline Policy for specific permissions
       inline_policy = jsonencode({
         Version = "2012-10-17"
@@ -278,7 +278,7 @@ module "aws_sso" {
           }
         ]
       })
-      
+
       # Permission Boundary for security
       permissions_boundary = {
         customer_managed_policy_reference = {
@@ -403,3 +403,37 @@ No modules.
 | <a name="output_identity_store_users"></a> [identity\_store\_users](#output\_identity\_store\_users) | Map of created Identity Store users |
 | <a name="output_permission_sets"></a> [permission\_sets](#output\_permission\_sets) | Map of created permission sets |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Development
+
+### Prerequisites
+- [terraform](https://learn.hashicorp.com/terraform/getting-started/install#installing-terraform)
+- [terraform-docs](https://github.com/segmentio/terraform-docs)
+- [pre-commit](https://pre-commit.com/#install)
+- [golang](https://golang.org/doc/install#install)
+- [golint](https://github.com/golang/lint#installation)
+
+### Configurations
+- Configure pre-commit hooks
+  ```sh
+  pre-commit install
+  ```
+- Configure golang deps for tests
+  ```sh
+  go get github.com/gruntwork-io/terratest/modules/terraform
+  go get github.com/stretchr/testify/assert
+  ```
+### Git commits
+
+while Contributing or doing git commit please specify the breaking change in your commit message whether its major,minor or patch
+
+For Example
+
+```sh
+git commit -m "your commit message #major"
+```
+By specifying this , it will bump the version and if you dont specify this in your commit message then by default it will consider patch and will bump that accordingly
+
+## Authors
+This project is authored by:
+- SourceFuse
