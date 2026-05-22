@@ -6,5 +6,13 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 5.0, < 7.0"
     }
+    keycloak = {
+      source  = "keycloak/keycloak"
+      version = ">= 4.5"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.0"
+    }
   }
 }

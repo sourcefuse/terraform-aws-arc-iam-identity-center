@@ -346,12 +346,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0, < 7.0 |
+| <a name="requirement_http"></a> [http](#requirement\_http) | >= 3.0 |
+| <a name="requirement_keycloak"></a> [keycloak](#requirement\_keycloak) | >= 4.5 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.46.0 |
+| <a name="provider_http"></a> [http](#provider\_http) | 3.6.0 |
+| <a name="provider_keycloak"></a> [keycloak](#provider\_keycloak) | 5.7.0 |
 
 ## Modules
 
@@ -361,9 +365,11 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [aws_iam_saml_provider.keycloak](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_saml_provider) | resource |
 | [aws_identitystore_group.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/identitystore_group) | resource |
 | [aws_identitystore_group_membership.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/identitystore_group_membership) | resource |
 | [aws_identitystore_user.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/identitystore_user) | resource |
+| [aws_ssm_parameter.keycloak_saml_metadata](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_parameter) | resource |
 | [aws_ssoadmin_account_assignment.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_account_assignment) | resource |
 | [aws_ssoadmin_application.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_application) | resource |
 | [aws_ssoadmin_application_assignment.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_application_assignment) | resource |
@@ -372,7 +378,16 @@ No modules.
 | [aws_ssoadmin_permission_set.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_permission_set) | resource |
 | [aws_ssoadmin_permission_set_inline_policy.inline](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_permission_set_inline_policy) | resource |
 | [aws_ssoadmin_permissions_boundary_attachment.boundary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_permissions_boundary_attachment) | resource |
+| [keycloak_group.aws_groups](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/group) | resource |
+| [keycloak_group_roles.aws_group_roles](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/group_roles) | resource |
+| [keycloak_realm.aws](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/realm) | resource |
+| [keycloak_role.aws_roles](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/role) | resource |
+| [keycloak_saml_client.aws_sso](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/saml_client) | resource |
+| [keycloak_saml_user_property_protocol_mapper.role_session_name](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/saml_user_property_protocol_mapper) | resource |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 | [aws_ssoadmin_instances.existing](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssoadmin_instances) | data source |
+| [http_http.aws_sp_metadata](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
+| [http_http.keycloak_saml_metadata](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
 
 ## Inputs
 
@@ -385,6 +400,8 @@ No modules.
 | <a name="input_identity_center_instance_arn"></a> [identity\_center\_instance\_arn](#input\_identity\_center\_instance\_arn) | ARN of existing Identity Center instance (optional - will auto-discover if not provided) | `string` | `null` | no |
 | <a name="input_identity_store_groups"></a> [identity\_store\_groups](#input\_identity\_store\_groups) | Map of Identity Store groups to create | <pre>map(object({<br/>    display_name = string<br/>    description  = optional(string, "")<br/>  }))</pre> | `{}` | no |
 | <a name="input_identity_store_users"></a> [identity\_store\_users](#input\_identity\_store\_users) | Map of Identity Store users to create | <pre>map(object({<br/>    user_name    = string<br/>    display_name = optional(string)<br/>    given_name   = string<br/>    family_name  = string<br/>    email        = string<br/>    locale       = optional(string, "en-US")<br/>    nickname     = optional(string)<br/>    timezone     = optional(string, "UTC")<br/>    title        = optional(string)<br/>    groups       = optional(list(string), [])<br/>    direct_assignments = optional(list(object({<br/>      permission_set = string<br/>      account_id     = string<br/>      reason         = optional(string, "")<br/>    })), [])<br/>  }))</pre> | `{}` | no |
+| <a name="input_keycloak_config"></a> [keycloak\_config](#input\_keycloak\_config) | Keycloak configuration for SAML integration. Required when keycloak\_enabled = true. | <pre>object({<br/>    url       = string<br/>    realm     = string<br/>    client_id = string<br/>    username  = string<br/>    password  = string<br/>    roles = optional(map(object({<br/>      description = optional(string, "")<br/>    })), {})<br/>    groups = optional(map(object({<br/>      roles = list(string)<br/>    })), {})<br/>  })</pre> | `null` | no |
+| <a name="input_keycloak_enabled"></a> [keycloak\_enabled](#input\_keycloak\_enabled) | Set to true to enable Keycloak SAML integration with IAM Identity Center | `bool` | `false` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix for resource names | `string` | `""` | no |
 | <a name="input_name_suffix"></a> [name\_suffix](#input\_name\_suffix) | Suffix for resource names | `string` | `""` | no |
 | <a name="input_permission_sets"></a> [permission\_sets](#input\_permission\_sets) | Map of permission sets to create | <pre>map(object({<br/>    description          = optional(string, "")<br/>    session_duration     = optional(string, "PT1H")<br/>    relay_state          = optional(string)<br/>    aws_managed_policies = optional(list(string), [])<br/>    customer_managed_policies = optional(list(object({<br/>      name = string<br/>      path = optional(string, "/")<br/>    })), [])<br/>    inline_policy = optional(string)<br/>    permissions_boundary = optional(object({<br/>      customer_managed_policy_reference = optional(object({<br/>        name = string<br/>        path = optional(string, "/")<br/>      }))<br/>      managed_policy_arn = optional(string)<br/>    }))<br/>    tags = optional(map(string), {})<br/>  }))</pre> | `{}` | no |
@@ -401,6 +418,9 @@ No modules.
 | <a name="output_identity_store_groups"></a> [identity\_store\_groups](#output\_identity\_store\_groups) | Map of created Identity Store groups |
 | <a name="output_identity_store_id"></a> [identity\_store\_id](#output\_identity\_store\_id) | ID of the Identity Store |
 | <a name="output_identity_store_users"></a> [identity\_store\_users](#output\_identity\_store\_users) | Map of created Identity Store users |
+| <a name="output_keycloak_identity_center_metadata"></a> [keycloak\_identity\_center\_metadata](#output\_keycloak\_identity\_center\_metadata) | Instructions to complete the one-time IAM Identity Center identity source setup:<br/>1. Retrieve the Keycloak SAML metadata XML:<br/>   aws ssm get-parameter --name <keycloak\_saml\_metadata\_ssm\_parameter> --with-decryption --query Parameter.Value --output text > keycloak-metadata.xml<br/>2. In the AWS Console: IAM Identity Center → Settings → Authentication → Configure → External IdP<br/>3. Upload keycloak-metadata.xml as the IdP SAML metadata<br/>4. Ensure IAM Identity Store users have userName set to their email address (NameID format is emailAddress) |
+| <a name="output_keycloak_saml_metadata_ssm_parameter"></a> [keycloak\_saml\_metadata\_ssm\_parameter](#output\_keycloak\_saml\_metadata\_ssm\_parameter) | SSM parameter path storing the Keycloak SAML metadata XML (null when keycloak\_enabled = false) |
+| <a name="output_keycloak_saml_provider_arn"></a> [keycloak\_saml\_provider\_arn](#output\_keycloak\_saml\_provider\_arn) | ARN of the AWS IAM SAML provider created for Keycloak (null when keycloak\_enabled = false) |
 | <a name="output_permission_sets"></a> [permission\_sets](#output\_permission\_sets) | Map of created permission sets |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

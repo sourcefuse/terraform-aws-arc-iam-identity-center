@@ -146,3 +146,27 @@ variable "name_suffix" {
   type        = string
   default     = ""
 }
+
+variable "keycloak_enabled" {
+  description = "Set to true to enable Keycloak SAML integration with IAM Identity Center"
+  type        = bool
+  default     = false
+}
+
+variable "keycloak_config" {
+  description = "Keycloak configuration for SAML integration. Required when keycloak_enabled = true."
+  type = object({
+    url       = string
+    realm     = string
+    client_id = string
+    username  = string
+    password  = string
+    roles = optional(map(object({
+      description = optional(string, "")
+    })), {})
+    groups = optional(map(object({
+      roles = list(string)
+    })), {})
+  })
+  default = null
+}

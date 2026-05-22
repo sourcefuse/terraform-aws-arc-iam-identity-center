@@ -77,3 +77,25 @@ output "application_assignments" {
     }
   }
 }
+
+output "keycloak_saml_provider_arn" {
+  description = "ARN of the AWS IAM SAML provider created for Keycloak (null when keycloak_enabled = false)"
+  value       = var.keycloak_enabled ? aws_iam_saml_provider.keycloak[0].arn : null
+}
+
+output "keycloak_saml_metadata_ssm_parameter" {
+  description = "SSM parameter path storing the Keycloak SAML metadata XML (null when keycloak_enabled = false)"
+  value       = var.keycloak_enabled ? aws_ssm_parameter.keycloak_saml_metadata[0].name : null
+}
+
+output "keycloak_identity_center_metadata" {
+  description = <<-EOT
+    Instructions to complete the one-time IAM Identity Center identity source setup:
+    1. Retrieve the Keycloak SAML metadata XML:
+       aws ssm get-parameter --name <keycloak_saml_metadata_ssm_parameter> --with-decryption --query Parameter.Value --output text > keycloak-metadata.xml
+    2. In the AWS Console: IAM Identity Center → Settings → Authentication → Configure → External IdP
+    3. Upload keycloak-metadata.xml as the IdP SAML metadata
+    4. Ensure IAM Identity Store users have userName set to their email address (NameID format is emailAddress)
+  EOT
+  value       = var.keycloak_enabled ? "Retrieve metadata from SSM: ${aws_ssm_parameter.keycloak_saml_metadata[0].name}" : null
+}
