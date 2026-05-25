@@ -27,6 +27,41 @@ This example automates the full Keycloak ↔ AWS IAM Identity Center SAML 2.0 fe
 
 ## Usage
 
+### From the Terraform Registry (recommended)
+
+```hcl
+provider "keycloak" {
+  url       = "https://keycloak.example.com"
+  client_id = "admin-cli"
+  username  = "admin"
+  password  = var.keycloak_admin_password
+}
+
+module "aws_sso" {
+  source  = "sourcefuse/arc-iam-identity-center/aws"
+  version = "x.x.x"
+
+  permission_sets        = { ... }
+  identity_store_groups  = { ... }
+  account_assignments    = { ... }
+}
+
+module "keycloak" {
+  source  = "sourcefuse/arc-iam-identity-center/aws//modules/keycloak"
+  version = "x.x.x"
+
+  realm             = "aws-sso"
+  keycloak_url      = "https://keycloak.example.com"
+  identity_store_id = module.aws_sso.identity_store_id
+  instance_arn      = module.aws_sso.identity_center_instance_arn
+  roles             = { "aws-admin" = { description = "Admin role" } }
+  groups            = { "aws-admins" = { roles = ["aws-admin"] } }
+  tags              = {}
+}
+```
+
+### From this example (local development)
+
 1. Copy `terraform.tfvars` and fill in your values:
 
 ```hcl

@@ -19,4 +19,15 @@ keycloak_config = {
     "aws-developers" = { roles = ["aws-developer"] }
     "aws-viewers"    = { roles = ["aws-readonly"] }
   }
+
+  # Optional: create users in Keycloak automatically
+  # username = email (must match IAM Identity Store userName)
+  users = {
+    "arun" = {
+      email      = "arun.sai@sourcefuse.com"
+      first_name = "Arun"
+      last_name  = "Sai"
+      groups     = ["aws-admins"]
+    }
+  }
 }

@@ -195,3 +195,164 @@ resource "aws_ssoadmin_application_assignment" "main" {
   principal_id    = each.value.principal_id
   principal_type  = each.value.principal_type
 }
+
+
+################################################################################
+## Keycloak SAML Integration
+## Only created when var.keycloak_enabled = true.
+################################################################################
+
+data "aws_region" "current" {}
+locals {
+  aws_region = data.aws_region.current.id
+}
+
+resource "keycloak_realm" "aws" {
+  count   = var.keycloak_enabled ? 1 : 0
+  realm   = var.keycloak_config.realm
+  enabled = true
+}
+
+resource "keycloak_saml_client" "aws_sso" {
+  count    = var.keycloak_enabled ? 1 : 0
+  realm_id = keycloak_realm.aws[0].id
+
+  client_id                 = "https://${local.aws_region}.signin.aws.amazon.com/platform/saml/${local.identity_store_id}"
+  name                      = var.keycloak_config.saml.client_name
+  sign_documents            = var.keycloak_config.saml.sign_documents
+  sign_assertions           = var.keycloak_config.saml.sign_assertions
+  include_authn_statement   = var.keycloak_config.saml.include_authn_statement
+  client_signature_required = var.keycloak_config.saml.client_signature_required
+  signature_algorithm       = var.keycloak_config.saml.signature_algorithm
+  valid_redirect_uris = concat(
+    [
+      "https://${local.aws_region}.sso.signin.aws/platform/saml/acs/*",
+      "https://${local.aws_region}.signin.aws/platform/saml/acs/*",
+      "https://*.signin.aws/*",
+      "https://*.awsapps.com/*",
+    ],
+    var.keycloak_config.saml.extra_redirect_uris
+  )
+  base_url                   = "https://${local.aws_region}.sso.signin.aws/platform/saml/acs/*"
+  idp_initiated_sso_url_name = var.keycloak_config.saml.idp_initiated_sso_url_name
+  name_id_format             = var.keycloak_config.saml.name_id_format
+  force_name_id_format       = var.keycloak_config.saml.force_name_id_format
+}
+
+resource "keycloak_saml_user_property_protocol_mapper" "role_session_name" {
+  count     = var.keycloak_enabled ? 1 : 0
+  realm_id  = keycloak_realm.aws[0].id
+  client_id = keycloak_saml_client.aws_sso[0].id
+  name      = "RoleSessionName"
+
+  user_property              = var.keycloak_config.saml.role_session_name_property
+  saml_attribute_name        = "https://aws.amazon.com/SAML/Attributes/RoleSessionName"
+  saml_attribute_name_format = var.keycloak_config.saml.role_session_name_format
+}
+
+resource "keycloak_role" "aws_roles" {
+  for_each = var.keycloak_enabled ? var.keycloak_config.roles : {}
+
+  realm_id    = keycloak_realm.aws[0].id
+  name        = each.key
+  description = each.value.description
+}
+
+resource "keycloak_group" "aws_groups" {
+  for_each = var.keycloak_enabled ? var.keycloak_config.groups : {}
+
+  realm_id = keycloak_realm.aws[0].id
+  name     = each.key
+}
+
+resource "keycloak_group_roles" "aws_group_roles" {
+  for_each = var.keycloak_enabled ? var.keycloak_config.groups : {}
+
+  realm_id = keycloak_realm.aws[0].id
+  group_id = keycloak_group.aws_groups[each.key].id
+  role_ids = [for r in each.value.roles : keycloak_role.aws_roles[r].id]
+}
+
+# Creates Keycloak users and optionally assigns them to Keycloak groups.
+# user_name must match the email — it is sent as the SAML NameID and must
+# match the userName in IAM Identity Store.
+
+resource "random_password" "keycloak_user" {
+  for_each = var.keycloak_enabled ? var.keycloak_config.users : {}
+
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+?"
+  min_upper        = 1
+  min_lower        = 1
+  min_numeric      = 1
+  min_special      = 1
+}
+
+resource "keycloak_user" "aws_users" {
+  for_each = var.keycloak_enabled ? var.keycloak_config.users : {}
+
+  realm_id       = keycloak_realm.aws[0].id
+  username       = each.value.email
+  email          = each.value.email
+  first_name     = each.value.first_name
+  last_name      = each.value.last_name
+  email_verified = true
+  enabled        = true
+
+  initial_password {
+    value     = random_password.keycloak_user[each.key].result
+    temporary = var.keycloak_config.saml.initial_password_temporary
+  }
+}
+
+# Stores each user's generated password in SSM so admins can retrieve it.
+# Path: /iam-identity-center/keycloak/<realm>/users/<email>/password
+resource "aws_ssm_parameter" "keycloak_user_password" {
+  for_each = var.keycloak_enabled ? var.keycloak_config.users : {}
+
+  name        = "/iam-identity-center/keycloak/${var.keycloak_config.realm}/users/${replace(each.value.email, "@", "_at_")}/password"
+  description = "Initial password for Keycloak user ${each.value.email}"
+  type        = "SecureString"
+  value       = random_password.keycloak_user[each.key].result
+
+  tags = local.common_tags
+}
+
+resource "keycloak_user_groups" "aws_user_groups" {
+  for_each = {
+    for k, v in(var.keycloak_enabled ? var.keycloak_config.users : {}) :
+    k => v if length(v.groups) > 0
+  }
+
+  realm_id = keycloak_realm.aws[0].id
+  user_id  = keycloak_user.aws_users[each.key].id
+  group_ids = [
+    for g in each.value.groups : keycloak_group.aws_groups[g].id
+  ]
+}
+
+data "http" "keycloak_saml_metadata" {
+  count = var.keycloak_enabled ? 1 : 0
+  url   = "${var.keycloak_config.url}/realms/${var.keycloak_config.realm}/protocol/saml/descriptor"
+
+  depends_on = [keycloak_saml_client.aws_sso]
+}
+
+resource "aws_iam_saml_provider" "keycloak" {
+  count                  = var.keycloak_enabled ? 1 : 0
+  name                   = "keycloak-${var.keycloak_config.realm}"
+  saml_metadata_document = data.http.keycloak_saml_metadata[0].response_body
+
+  tags = local.common_tags
+}
+
+resource "aws_ssm_parameter" "keycloak_saml_metadata" {
+  count       = var.keycloak_enabled ? 1 : 0
+  name        = "/iam-identity-center/keycloak/${var.keycloak_config.realm}/saml-metadata"
+  description = "Keycloak SAML metadata XML for IAM Identity Center external IdP configuration"
+  type        = "SecureString"
+  value       = data.http.keycloak_saml_metadata[0].response_body
+
+  tags = local.common_tags
+}

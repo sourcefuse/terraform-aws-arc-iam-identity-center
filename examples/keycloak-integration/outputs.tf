@@ -1,11 +1,13 @@
 output "keycloak_saml_provider_arn" {
   description = "ARN of the AWS IAM SAML provider created for Keycloak"
   value       = module.aws_sso.keycloak_saml_provider_arn
+  sensitive   = true
 }
 
 output "keycloak_saml_metadata_ssm_parameter" {
-  description = "SSM parameter path storing the Keycloak SAML metadata XML. Retrieve this and upload to IAM Identity Center: Settings → Authentication → External IdP"
+  description = "SSM parameter path — retrieve and upload to IAM Identity Center as the external IdP metadata"
   value       = module.aws_sso.keycloak_saml_metadata_ssm_parameter
+  sensitive   = true
 }
 
 output "permission_sets" {

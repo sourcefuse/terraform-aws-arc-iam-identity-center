@@ -8,26 +8,11 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 5.0"
     }
-    keycloak = {
-      source  = "keycloak/keycloak"
-      version = ">= 4.5"
-    }
-    http = {
-      source  = "hashicorp/http"
-      version = ">= 3.0"
-    }
   }
 }
 
 provider "aws" {
   region = var.region
-}
-
-provider "keycloak" {
-  client_id = var.keycloak_config.client_id
-  username  = var.keycloak_config.username
-  password  = var.keycloak_config.password
-  url       = var.keycloak_config.url
 }
 
 ################################################################################
@@ -46,17 +31,18 @@ module "tags" {
 }
 
 ################################################################################
-## IAM Identity Center — with Keycloak integration enabled
+## IAM Identity Center with Keycloak SAML integration
 ##
-## Note    — Store metadata in SSM Parameter Store
-##           The Keycloak SAML metadata XML is saved as a SecureString so it can
-##           be retrieved for the one-time identity source change in the AWS Console:
-##           Settings → Change identity source → External IdP → upload XML.
+## Set keycloak_enabled = true and provide keycloak_config to enable.
+## After apply, retrieve the Keycloak metadata from SSM and upload to:
+##   IAM Identity Center → Settings → Authentication → External identity provider
 ################################################################################
 module "aws_sso" {
+  # Local path for development. When using from the Terraform registry, use:
+  # source  = "sourcefuse/arc-iam-identity-center/aws"
+  # version = "x.x.x"
   source = "../../"
 
-  # Enable Keycloak — all resources in keycloak.tf are triggered by this flag
   keycloak_enabled = true
   keycloak_config  = var.keycloak_config
 
