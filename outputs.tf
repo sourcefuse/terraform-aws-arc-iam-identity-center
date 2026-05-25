@@ -77,3 +77,13 @@ output "application_assignments" {
     }
   }
 }
+
+output "keycloak_saml_provider_arn" {
+  description = "ARN of the AWS IAM SAML provider created for Keycloak (null when keycloak_enabled = false)"
+  value       = var.keycloak_enabled ? aws_iam_saml_provider.keycloak[0].arn : null
+}
+
+output "keycloak_saml_metadata_ssm_parameter" {
+  description = "SSM parameter path storing the Keycloak SAML metadata XML (null when keycloak_enabled = false)"
+  value       = var.keycloak_enabled ? aws_ssm_parameter.keycloak_saml_metadata[0].name : null
+}

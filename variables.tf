@@ -146,3 +146,63 @@ variable "name_suffix" {
   type        = string
   default     = ""
 }
+
+
+
+variable "keycloak_enabled" {
+  description = "Set to true to enable Keycloak SAML integration with IAM Identity Center"
+  type        = bool
+  default     = false
+}
+
+variable "keycloak_config" {
+  description = "Keycloak configuration for SAML integration. Required when keycloak_enabled = true."
+  type = object({
+    url       = string
+    realm     = string
+    client_id = string
+    username  = string
+    password  = string
+    roles = optional(map(object({
+      description = optional(string, "")
+    })), {})
+    groups = optional(map(object({
+      roles = list(string)
+    })), {})
+    users = optional(map(object({
+      email      = string
+      first_name = string
+      last_name  = string
+      groups     = optional(list(string), [])
+    })), {})
+    saml = optional(object({
+      # Name of the SAML client in Keycloak
+      client_name = optional(string, "amazon-aws")
+      # IdP-initiated SSO URL name (used to construct the IdP-initiated login URL)
+      idp_initiated_sso_url_name = optional(string, "amazon-aws")
+      # Signature algorithm for SAML assertions. AWS requires RSA_SHA256.
+      signature_algorithm = optional(string, "RSA_SHA256")
+      # NameID format. AWS IAM Identity Center requires email.
+      name_id_format = optional(string, "email")
+      # Force the configured NameID format regardless of what the SP requests
+      force_name_id_format = optional(bool, true)
+      # Sign the SAML document
+      sign_documents = optional(bool, true)
+      # Sign the SAML assertions
+      sign_assertions = optional(bool, true)
+      # Include AuthnStatement in assertions
+      include_authn_statement = optional(bool, true)
+      # Require the SP (AWS) to sign AuthnRequests — AWS does not sign them
+      client_signature_required = optional(bool, false)
+      # User property to use as RoleSessionName attribute (email recommended)
+      role_session_name_property = optional(string, "email")
+      # NameFormat for the RoleSessionName SAML attribute
+      role_session_name_format = optional(string, "Basic")
+      # Whether the initial user password is temporary (forces change on first login)
+      initial_password_temporary = optional(bool, true)
+      # Additional valid redirect URIs beyond the default ACS URLs
+      extra_redirect_uris = optional(list(string), [])
+    }), {})
+  })
+  default = null
+}

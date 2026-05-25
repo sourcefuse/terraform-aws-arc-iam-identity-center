@@ -346,12 +346,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0, < 7.0 |
+| <a name="requirement_http"></a> [http](#requirement\_http) | >= 3.0 |
+| <a name="requirement_keycloak"></a> [keycloak](#requirement\_keycloak) | >= 4.5 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.46.0 |
+| <a name="provider_http"></a> [http](#provider\_http) | 3.6.0 |
+| <a name="provider_keycloak"></a> [keycloak](#provider\_keycloak) | 5.7.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.9.0 |
 
 ## Modules
 
@@ -361,9 +367,12 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [aws_iam_saml_provider.keycloak](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_saml_provider) | resource |
 | [aws_identitystore_group.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/identitystore_group) | resource |
 | [aws_identitystore_group_membership.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/identitystore_group_membership) | resource |
 | [aws_identitystore_user.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/identitystore_user) | resource |
+| [aws_ssm_parameter.keycloak_saml_metadata](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.keycloak_user_password](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_parameter) | resource |
 | [aws_ssoadmin_account_assignment.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_account_assignment) | resource |
 | [aws_ssoadmin_application.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_application) | resource |
 | [aws_ssoadmin_application_assignment.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_application_assignment) | resource |
@@ -372,7 +381,18 @@ No modules.
 | [aws_ssoadmin_permission_set.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_permission_set) | resource |
 | [aws_ssoadmin_permission_set_inline_policy.inline](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_permission_set_inline_policy) | resource |
 | [aws_ssoadmin_permissions_boundary_attachment.boundary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_permissions_boundary_attachment) | resource |
+| [keycloak_group.aws_groups](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/group) | resource |
+| [keycloak_group_roles.aws_group_roles](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/group_roles) | resource |
+| [keycloak_realm.aws](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/realm) | resource |
+| [keycloak_role.aws_roles](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/role) | resource |
+| [keycloak_saml_client.aws_sso](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/saml_client) | resource |
+| [keycloak_saml_user_property_protocol_mapper.role_session_name](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/saml_user_property_protocol_mapper) | resource |
+| [keycloak_user.aws_users](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/user) | resource |
+| [keycloak_user_groups.aws_user_groups](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/user_groups) | resource |
+| [random_password.keycloak_user](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 | [aws_ssoadmin_instances.existing](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssoadmin_instances) | data source |
+| [http_http.keycloak_saml_metadata](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
 
 ## Inputs
 
@@ -385,6 +405,8 @@ No modules.
 | <a name="input_identity_center_instance_arn"></a> [identity\_center\_instance\_arn](#input\_identity\_center\_instance\_arn) | ARN of existing Identity Center instance (optional - will auto-discover if not provided) | `string` | `null` | no |
 | <a name="input_identity_store_groups"></a> [identity\_store\_groups](#input\_identity\_store\_groups) | Map of Identity Store groups to create | <pre>map(object({<br/>    display_name = string<br/>    description  = optional(string, "")<br/>  }))</pre> | `{}` | no |
 | <a name="input_identity_store_users"></a> [identity\_store\_users](#input\_identity\_store\_users) | Map of Identity Store users to create | <pre>map(object({<br/>    user_name    = string<br/>    display_name = optional(string)<br/>    given_name   = string<br/>    family_name  = string<br/>    email        = string<br/>    locale       = optional(string, "en-US")<br/>    nickname     = optional(string)<br/>    timezone     = optional(string, "UTC")<br/>    title        = optional(string)<br/>    groups       = optional(list(string), [])<br/>    direct_assignments = optional(list(object({<br/>      permission_set = string<br/>      account_id     = string<br/>      reason         = optional(string, "")<br/>    })), [])<br/>  }))</pre> | `{}` | no |
+| <a name="input_keycloak_config"></a> [keycloak\_config](#input\_keycloak\_config) | Keycloak configuration for SAML integration. Required when keycloak\_enabled = true. | <pre>object({<br/>    url       = string<br/>    realm     = string<br/>    client_id = string<br/>    username  = string<br/>    password  = string<br/>    roles = optional(map(object({<br/>      description = optional(string, "")<br/>    })), {})<br/>    groups = optional(map(object({<br/>      roles = list(string)<br/>    })), {})<br/>    users = optional(map(object({<br/>      email      = string<br/>      first_name = string<br/>      last_name  = string<br/>      groups     = optional(list(string), [])<br/>    })), {})<br/>    saml = optional(object({<br/>      # Name of the SAML client in Keycloak<br/>      client_name = optional(string, "amazon-aws")<br/>      # IdP-initiated SSO URL name (used to construct the IdP-initiated login URL)<br/>      idp_initiated_sso_url_name = optional(string, "amazon-aws")<br/>      # Signature algorithm for SAML assertions. AWS requires RSA_SHA256.<br/>      signature_algorithm = optional(string, "RSA_SHA256")<br/>      # NameID format. AWS IAM Identity Center requires email.<br/>      name_id_format = optional(string, "email")<br/>      # Force the configured NameID format regardless of what the SP requests<br/>      force_name_id_format = optional(bool, true)<br/>      # Sign the SAML document<br/>      sign_documents = optional(bool, true)<br/>      # Sign the SAML assertions<br/>      sign_assertions = optional(bool, true)<br/>      # Include AuthnStatement in assertions<br/>      include_authn_statement = optional(bool, true)<br/>      # Require the SP (AWS) to sign AuthnRequests — AWS does not sign them<br/>      client_signature_required = optional(bool, false)<br/>      # User property to use as RoleSessionName attribute (email recommended)<br/>      role_session_name_property = optional(string, "email")<br/>      # NameFormat for the RoleSessionName SAML attribute<br/>      role_session_name_format = optional(string, "Basic")<br/>      # Whether the initial user password is temporary (forces change on first login)<br/>      initial_password_temporary = optional(bool, true)<br/>      # Additional valid redirect URIs beyond the default ACS URLs<br/>      extra_redirect_uris = optional(list(string), [])<br/>    }), {})<br/>  })</pre> | `null` | no |
+| <a name="input_keycloak_enabled"></a> [keycloak\_enabled](#input\_keycloak\_enabled) | Set to true to enable Keycloak SAML integration with IAM Identity Center | `bool` | `false` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix for resource names | `string` | `""` | no |
 | <a name="input_name_suffix"></a> [name\_suffix](#input\_name\_suffix) | Suffix for resource names | `string` | `""` | no |
 | <a name="input_permission_sets"></a> [permission\_sets](#input\_permission\_sets) | Map of permission sets to create | <pre>map(object({<br/>    description          = optional(string, "")<br/>    session_duration     = optional(string, "PT1H")<br/>    relay_state          = optional(string)<br/>    aws_managed_policies = optional(list(string), [])<br/>    customer_managed_policies = optional(list(object({<br/>      name = string<br/>      path = optional(string, "/")<br/>    })), [])<br/>    inline_policy = optional(string)<br/>    permissions_boundary = optional(object({<br/>      customer_managed_policy_reference = optional(object({<br/>        name = string<br/>        path = optional(string, "/")<br/>      }))<br/>      managed_policy_arn = optional(string)<br/>    }))<br/>    tags = optional(map(string), {})<br/>  }))</pre> | `{}` | no |
@@ -401,6 +423,8 @@ No modules.
 | <a name="output_identity_store_groups"></a> [identity\_store\_groups](#output\_identity\_store\_groups) | Map of created Identity Store groups |
 | <a name="output_identity_store_id"></a> [identity\_store\_id](#output\_identity\_store\_id) | ID of the Identity Store |
 | <a name="output_identity_store_users"></a> [identity\_store\_users](#output\_identity\_store\_users) | Map of created Identity Store users |
+| <a name="output_keycloak_saml_metadata_ssm_parameter"></a> [keycloak\_saml\_metadata\_ssm\_parameter](#output\_keycloak\_saml\_metadata\_ssm\_parameter) | SSM parameter path storing the Keycloak SAML metadata XML (null when keycloak\_enabled = false) |
+| <a name="output_keycloak_saml_provider_arn"></a> [keycloak\_saml\_provider\_arn](#output\_keycloak\_saml\_provider\_arn) | ARN of the AWS IAM SAML provider created for Keycloak (null when keycloak\_enabled = false) |
 | <a name="output_permission_sets"></a> [permission\_sets](#output\_permission\_sets) | Map of created permission sets |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
@@ -437,3 +461,93 @@ By specifying this , it will bump the version and if you dont specify this in yo
 ## Authors
 This project is authored by:
 - SourceFuse
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0, < 7.0 |
+| <a name="requirement_http"></a> [http](#requirement\_http) | >= 3.0 |
+| <a name="requirement_keycloak"></a> [keycloak](#requirement\_keycloak) | >= 4.5 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.0, < 7.0 |
+| <a name="provider_http"></a> [http](#provider\_http) | >= 3.0 |
+| <a name="provider_keycloak"></a> [keycloak](#provider\_keycloak) | >= 4.5 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 3.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_iam_saml_provider.keycloak](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_saml_provider) | resource |
+| [aws_identitystore_group.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/identitystore_group) | resource |
+| [aws_identitystore_group_membership.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/identitystore_group_membership) | resource |
+| [aws_identitystore_user.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/identitystore_user) | resource |
+| [aws_ssm_parameter.keycloak_saml_metadata](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.keycloak_user_password](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_parameter) | resource |
+| [aws_ssoadmin_account_assignment.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_account_assignment) | resource |
+| [aws_ssoadmin_application.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_application) | resource |
+| [aws_ssoadmin_application_assignment.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_application_assignment) | resource |
+| [aws_ssoadmin_customer_managed_policy_attachment.customer_managed](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_customer_managed_policy_attachment) | resource |
+| [aws_ssoadmin_managed_policy_attachment.aws_managed](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_managed_policy_attachment) | resource |
+| [aws_ssoadmin_permission_set.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_permission_set) | resource |
+| [aws_ssoadmin_permission_set_inline_policy.inline](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_permission_set_inline_policy) | resource |
+| [aws_ssoadmin_permissions_boundary_attachment.boundary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssoadmin_permissions_boundary_attachment) | resource |
+| [keycloak_group.aws_groups](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/group) | resource |
+| [keycloak_group_roles.aws_group_roles](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/group_roles) | resource |
+| [keycloak_realm.aws](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/realm) | resource |
+| [keycloak_role.aws_roles](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/role) | resource |
+| [keycloak_saml_client.aws_sso](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/saml_client) | resource |
+| [keycloak_saml_user_property_protocol_mapper.role_session_name](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/saml_user_property_protocol_mapper) | resource |
+| [keycloak_user.aws_users](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/user) | resource |
+| [keycloak_user_groups.aws_user_groups](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs/resources/user_groups) | resource |
+| [random_password.keycloak_user](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
+| [aws_ssoadmin_instances.existing](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssoadmin_instances) | data source |
+| [http_http.aws_sp_metadata](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
+| [http_http.keycloak_saml_metadata](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_account_assignments"></a> [account\_assignments](#input\_account\_assignments) | Map of account assignments to create | <pre>map(object({<br/>    permission_set_name = string<br/>    principal_type      = string<br/>    principal_id        = string<br/>    target_type         = string<br/>    target_id           = string<br/>  }))</pre> | `{}` | no |
+| <a name="input_application_assignments"></a> [application\_assignments](#input\_application\_assignments) | Map of application assignments to create | <pre>map(object({<br/>    application_name = string<br/>    principal_type   = string<br/>    principal_id     = string<br/>  }))</pre> | `{}` | no |
+| <a name="input_applications"></a> [applications](#input\_applications) | Map of applications to create | <pre>map(object({<br/>    name                     = string<br/>    description              = optional(string, "")<br/>    application_provider_arn = string<br/>    portal_options = optional(object({<br/>      sign_in_options = optional(object({<br/>        origin          = string<br/>        application_url = optional(string)<br/>      }))<br/>      visibility = optional(string, "ENABLED")<br/>    }))<br/>    tags = optional(map(string), {})<br/>  }))</pre> | `{}` | no |
+| <a name="input_group_memberships"></a> [group\_memberships](#input\_group\_memberships) | Map of group memberships to create | <pre>map(object({<br/>    group_name = string<br/>    user_name  = string<br/>  }))</pre> | `{}` | no |
+| <a name="input_identity_center_instance_arn"></a> [identity\_center\_instance\_arn](#input\_identity\_center\_instance\_arn) | ARN of existing Identity Center instance (optional - will auto-discover if not provided) | `string` | `null` | no |
+| <a name="input_identity_store_groups"></a> [identity\_store\_groups](#input\_identity\_store\_groups) | Map of Identity Store groups to create | <pre>map(object({<br/>    display_name = string<br/>    description  = optional(string, "")<br/>  }))</pre> | `{}` | no |
+| <a name="input_identity_store_users"></a> [identity\_store\_users](#input\_identity\_store\_users) | Map of Identity Store users to create | <pre>map(object({<br/>    user_name    = string<br/>    display_name = optional(string)<br/>    given_name   = string<br/>    family_name  = string<br/>    email        = string<br/>    locale       = optional(string, "en-US")<br/>    nickname     = optional(string)<br/>    timezone     = optional(string, "UTC")<br/>    title        = optional(string)<br/>    groups       = optional(list(string), [])<br/>    direct_assignments = optional(list(object({<br/>      permission_set = string<br/>      account_id     = string<br/>      reason         = optional(string, "")<br/>    })), [])<br/>  }))</pre> | `{}` | no |
+| <a name="input_keycloak_config"></a> [keycloak\_config](#input\_keycloak\_config) | Keycloak configuration for SAML integration. Required when keycloak\_enabled = true. | <pre>object({<br/>    url       = string<br/>    realm     = string<br/>    client_id = string<br/>    username  = string<br/>    password  = string<br/>    roles = optional(map(object({<br/>      description = optional(string, "")<br/>    })), {})<br/>    groups = optional(map(object({<br/>      roles = list(string)<br/>    })), {})<br/>    users = optional(map(object({<br/>      email      = string<br/>      first_name = string<br/>      last_name  = string<br/>      groups     = optional(list(string), [])<br/>    })), {})<br/>    saml = optional(object({<br/>      # Name of the SAML client in Keycloak<br/>      client_name = optional(string, "amazon-aws")<br/>      # IdP-initiated SSO URL name (used to construct the IdP-initiated login URL)<br/>      idp_initiated_sso_url_name = optional(string, "amazon-aws")<br/>      # Signature algorithm for SAML assertions. AWS requires RSA_SHA256.<br/>      signature_algorithm = optional(string, "RSA_SHA256")<br/>      # NameID format. AWS IAM Identity Center requires email.<br/>      name_id_format = optional(string, "email")<br/>      # Force the configured NameID format regardless of what the SP requests<br/>      force_name_id_format = optional(bool, true)<br/>      # Sign the SAML document<br/>      sign_documents = optional(bool, true)<br/>      # Sign the SAML assertions<br/>      sign_assertions = optional(bool, true)<br/>      # Include AuthnStatement in assertions<br/>      include_authn_statement = optional(bool, true)<br/>      # Require the SP (AWS) to sign AuthnRequests — AWS does not sign them<br/>      client_signature_required = optional(bool, false)<br/>      # User property to use as RoleSessionName attribute (email recommended)<br/>      role_session_name_property = optional(string, "email")<br/>      # NameFormat for the RoleSessionName SAML attribute<br/>      role_session_name_format = optional(string, "Basic")<br/>      # Whether the initial user password is temporary (forces change on first login)<br/>      initial_password_temporary = optional(bool, true)<br/>      # Additional valid redirect URIs beyond the default ACS URLs<br/>      extra_redirect_uris = optional(list(string), [])<br/>    }), {})<br/>  })</pre> | `null` | no |
+| <a name="input_keycloak_enabled"></a> [keycloak\_enabled](#input\_keycloak\_enabled) | Set to true to enable Keycloak SAML integration with IAM Identity Center | `bool` | `false` | no |
+| <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix for resource names | `string` | `""` | no |
+| <a name="input_name_suffix"></a> [name\_suffix](#input\_name\_suffix) | Suffix for resource names | `string` | `""` | no |
+| <a name="input_permission_sets"></a> [permission\_sets](#input\_permission\_sets) | Map of permission sets to create | <pre>map(object({<br/>    description          = optional(string, "")<br/>    session_duration     = optional(string, "PT1H")<br/>    relay_state          = optional(string)<br/>    aws_managed_policies = optional(list(string), [])<br/>    customer_managed_policies = optional(list(object({<br/>      name = string<br/>      path = optional(string, "/")<br/>    })), [])<br/>    inline_policy = optional(string)<br/>    permissions_boundary = optional(object({<br/>      customer_managed_policy_reference = optional(object({<br/>        name = string<br/>        path = optional(string, "/")<br/>      }))<br/>      managed_policy_arn = optional(string)<br/>    }))<br/>    tags = optional(map(string), {})<br/>  }))</pre> | `{}` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to all resources | `map(string)` | `{}` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_account_assignments"></a> [account\_assignments](#output\_account\_assignments) | Map of created account assignments |
+| <a name="output_application_assignments"></a> [application\_assignments](#output\_application\_assignments) | Map of created application assignments |
+| <a name="output_applications"></a> [applications](#output\_applications) | Map of created applications |
+| <a name="output_identity_center_instance_arn"></a> [identity\_center\_instance\_arn](#output\_identity\_center\_instance\_arn) | ARN of the Identity Center instance |
+| <a name="output_identity_store_groups"></a> [identity\_store\_groups](#output\_identity\_store\_groups) | Map of created Identity Store groups |
+| <a name="output_identity_store_id"></a> [identity\_store\_id](#output\_identity\_store\_id) | ID of the Identity Store |
+| <a name="output_identity_store_users"></a> [identity\_store\_users](#output\_identity\_store\_users) | Map of created Identity Store users |
+| <a name="output_keycloak_saml_metadata_ssm_parameter"></a> [keycloak\_saml\_metadata\_ssm\_parameter](#output\_keycloak\_saml\_metadata\_ssm\_parameter) | SSM parameter path storing the Keycloak SAML metadata XML (null when keycloak\_enabled = false) |
+| <a name="output_keycloak_saml_provider_arn"></a> [keycloak\_saml\_provider\_arn](#output\_keycloak\_saml\_provider\_arn) | ARN of the AWS IAM SAML provider created for Keycloak (null when keycloak\_enabled = false) |
+| <a name="output_permission_sets"></a> [permission\_sets](#output\_permission\_sets) | Map of created permission sets |
+<!-- END_TF_DOCS -->
