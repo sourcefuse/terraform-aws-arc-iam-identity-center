@@ -10,7 +10,7 @@
 
 > **Source:** [https://github.com/sourcefuse/terraform-aws-arc-iam-identity-center](https://github.com/sourcefuse/terraform-aws-arc-iam-identity-center)
 
-[![Latest Release](https://img.shields.io/github/release/sourcefuse/terraform-aws-arc-iam-identity-center.svg?style=for-the-badge)](https://github.com/sourcefuse/terraform-aws-arc-iam-identity-center/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/sourcefuse/terraform-aws-arc-iam-identity-center?style=for-the-badge)](https://github.com/sourcefuse/terraform-aws-arc-iam-identity-center/releases)
 [![Last Updated](https://img.shields.io/github/last-commit/sourcefuse/terraform-aws-arc-iam-identity-center.svg?style=for-the-badge)](https://github.com/sourcefuse/terraform-aws-arc-iam-identity-center/commits)
 ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
